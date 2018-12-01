@@ -1,0 +1,76 @@
+---
+
+- command: timedatectl set-ntp true
+
+- command:parted /dev/mmcblk1 -s -- mklabel msdos mkpart pri 1 1G mkpart pri 1G 10G mkpart pri 10G -1 set 1 boot on
+
+- filesystem: 
+    fstype: ext4
+    dev: /dev/mmcblk1
+
+- command: mkswap /dev/mmcblk1p2
+
+- command: swapon /dev/mmcblk1p2
+
+- filesystem:
+        fstype: ext4
+    dev: /dev/mmcblk1p3/root
+
+- command: mount /dev/mapper/root /mnt
+
+- command: mkdir /mnt/boot
+
+- command: mount /dev/mmcblk1p1 /mnt/boot
+
+- command: grep States -A1 /etc/pacman.d/mirrorlist | awk '/^Server/' > mirror
+
+- command: pacstrap /mnt base
+
+- command: genfstab -U /mnt >> /mnt/etc/fstab
+ 
+- command: arch-chroot /mnt
+
+- command: ln -sf /usr/share/zoneinfo/US/Eastern /etc/localtime
+
+- command: hwclock--systohc
+
+- command: echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen
+
+- command: locale-gen
+
+- command: echo LANG=en_US.UTF-8 > /etc/hostname
+
+- template:
+    src: /mytemplates/hosts.j2
+    dest: /etc/hosts
+    owner: root
+
+- pacman:
+    name:
+      - htop
+      - tmux
+      - tmux
+      - intel-ucode
+      - grub 
+      - openssh
+      - parted
+      - vim
+      - wpa_supplicant
+
+- command: mkinitcpio -p linux
+
+- command: grub-install /dev/mmcblk0
+
+- command: grub-mkconfig -o /boot/grub/grub.cfg
+
+- expect:
+    command: passwd
+    responses:
+      (?i)password: 1
+  no_log: true
+
+- command: exit
+
+- command: umount -R /mnt
+
+- reboot: 
