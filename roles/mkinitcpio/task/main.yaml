@@ -1,0 +1,4 @@
+---
+
+- command: mkinitcpio -p linux
+

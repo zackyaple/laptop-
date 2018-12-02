@@ -1,0 +1,14 @@
+---
+
+- pacman:
+    name:
+      - htop
+      - tmux
+      - tmux
+      - intel-ucode
+      - grub 
+      - openssh
+      - parted
+      - vim
+      - wpa_supplicant
+

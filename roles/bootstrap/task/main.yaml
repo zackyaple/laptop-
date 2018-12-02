@@ -1,0 +1,55 @@
+- command: parted /dev/mmcblk1 -s -- mklabel msdos mkpart pri 1 1G mkpart pri 1G 10G mkpart pri 10G -1 set 1 boot on
+
+- parted:
+    device: /dev/mmcblk1
+    number: 1
+    state: present
+    part_start: 0Gib
+    part_end: 1GiB
+
+- parted:
+    device: /dev/mmcblk1
+    number: 1
+    state: present
+    part_start: 1Gib
+    part_end: 10GiB
+
+- parted:
+    device: /dev/mmcblk1
+    number: 1
+    state: present
+    part_start: 10gib
+    part_end: 100%
+
+- filesystem: 
+    fstype: ext4
+    dev: /dev/mmcblk1
+
+- command: mkswap /dev/mmcblk1p2
+
+- command: swapon /dev/mmcblk1p2
+
+- filesystem:
+    fstype: ext4
+    dev: /dev/mmcblk1p3/root
+
+- mount:
+    path: /mnt
+    src: /dev/mapper/root
+
+- file:
+    path: /mnt/boot 
+    state: directory
+
+- mount:
+    path: /dev/mmcblk1p1
+    src: /mnt/boot
+
+- command: pacstrap /mnt base
+
+- command: genfstab -U /mnt >> /mnt/etc/fstab
+ 
+- expect:
+    command: passwd
+    responses:
+      (?i)password: 1
