@@ -1,10 +1,4 @@
 ---
 
-- name: Check if Prosody is installed
-  stat:
-    path: /usr/local/bin/
-  register: prosody
-
 - name: Install Prosody
   include_tasks: install.yaml
-  when: not prosody.stat.exists
