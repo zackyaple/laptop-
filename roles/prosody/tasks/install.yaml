@@ -1,0 +1,14 @@
+---
+
+- name: echo deb into source.list
+  shell: echo deb http://packages.prosody.im/debian bionic main | sudo tee -a /etc/apt/sources.list
+
+- name: adding key file
+  shell: wget https://prosody.im/files/prosody-debian-packages.key -O- | sudo apt-key add -
+
+- apt:
+    update_cache: yes
+
+- apt:
+    name: prosody
+
