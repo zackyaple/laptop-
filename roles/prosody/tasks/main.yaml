@@ -1,4 +1,20 @@
 ---
 
-- name: Install Prosody
-  include_tasks: install.yaml
+- name: Add apt repository
+  template:
+    src: prosody.list.j2
+    dest: /etc/apt/sources.list.d/prosody.list
+  register: sources
+
+- name: Add apt key
+  apt_key:
+    url: https://prosody.im/files/prosody-debian-packages.key
+
+- name: Update apt cache
+  apt:
+    update_cache: yes
+  when: sources.changed
+
+- name: Install prosody
+  apt:
+    name: prosody
