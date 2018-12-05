@@ -1,0 +1,29 @@
+---
+
+- command: timedatectl set-ntp true
+
+- template:
+    src: mirrorlist.j2
+    dest: /etc/pacman.d/mirrorlist
+
+- file:
+    src: /usr/share/zoneinfo/US/Eastern
+    dest: /etc/localtime
+    state: link 
+
+- command: hwclock--systohc
+
+- template:
+    src: locale.gen.j2
+    dest: /etc/locale.gen
+  register: sources
+
+- command: locale-gen
+  when: sources.changed
+
+- template: 
+    src: locale.conf.j2
+    dest: /etc/locale.conf
+
+- command: hostnamectl set-hostname paublo
+
